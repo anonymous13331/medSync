@@ -1,10 +1,11 @@
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../lib/auth-context';
-import { Pill, Chrome as Home, Package, Bell, ClipboardList, Heart, Users, TriangleAlert as AlertTriangle, LogOut, Menu, X } from 'lucide-react';
+import { Pill, Chrome as Home, Package, Bell, ClipboardList, Heart, Users, TriangleAlert as AlertTriangle, LogOut, Menu, X, Brain } from 'lucide-react';
 import { useState } from 'react';
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: Home },
+  { name: 'Smart Intelligence', href: '/dashboard/intelligence', icon: Brain },
   { name: 'Medicines', href: '/dashboard/medicines', icon: Package },
   { name: 'Reminders', href: '/dashboard/reminders', icon: Bell },
   { name: 'Intake History', href: '/dashboard/intakes', icon: ClipboardList },
