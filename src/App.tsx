@@ -10,6 +10,7 @@ import { IntakesPage } from './pages/IntakesPage';
 import { HealthRecordPage } from './pages/HealthRecordPage';
 import { ContactsPage } from './pages/ContactsPage';
 import { EmergencyPage } from './pages/EmergencyPage';
+import { IntelligencePage } from './pages/IntelligencePage';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -54,6 +55,7 @@ function AppRoutes() {
         <Route path="health" element={<HealthRecordPage />} />
         <Route path="contacts" element={<ContactsPage />} />
         <Route path="emergency" element={<EmergencyPage />} />
+        <Route path="intelligence" element={<IntelligencePage />} />
       </Route>
       <Route path="/" element={<Navigate to="/dashboard" replace />} />
     </Routes>
