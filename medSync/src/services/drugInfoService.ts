@@ -236,38 +236,65 @@ export async function searchDrug(query: string): Promise<DrugInfo | null> {
   await new Promise((resolve) => setTimeout(resolve, 500));
 
   const normalizedQuery = normalizeDrugName(query);
+  console.log("Searching for:", normalizedQuery);
 
   // Direct match
   if (drugDatabase[normalizedQuery]) {
     return drugDatabase[normalizedQuery];
   }
 
-  // Partial match - search in names and generic names
-  for (const [key, drug] of Object.entries(drugDatabase)) {
-    if (
-      key.includes(normalizedQuery) ||
-      normalizeDrugName(drug.name).includes(normalizedQuery) ||
-      normalizeDrugName(drug.genericName).includes(normalizedQuery)
-    ) {
-      return drug;
-    }
+  // Partial match - collect best match instead of first
+let bestMatch: DrugInfo | null = null;
+
+for (const [key, drug] of Object.entries(drugDatabase)) {
+  if (
+    key === normalizedQuery ||
+    normalizeDrugName(drug.name) === normalizedQuery ||
+    normalizeDrugName(drug.genericName) === normalizedQuery
+  ) {
+    return drug; // exact match first
   }
 
-  return null;
+  if (
+    key.includes(normalizedQuery) ||
+    normalizeDrugName(drug.name).includes(normalizedQuery) ||
+    normalizeDrugName(drug.genericName).includes(normalizedQuery)
+  ) {
+    bestMatch = drug; // store but don't return yet
+  }
 }
 
-// Get all available drugs for suggestions
+return bestMatch;
+
+}
+
+export async function extractDrugFromImage(imageFile: File): Promise<string | null> {
+  try {
+    const formData = new FormData();
+    formData.append("file", imageFile);
+
+    const response = await fetch("http://127.0.0.1:8000/scan", {
+      method: "POST",
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to detect medicine");
+    }
+
+    const data = await response.json();
+    console.log("OCR response:", data); // <-- add this
+    
+
+    return data.medicine || null;
+
+  } catch (error) {
+    console.error("OCR error:", error);
+    return null;
+  }
+}
 export function getAvailableDrugs(): string[] {
-  return Object.values(drugDatabase).map((drug) => drug.name);
-}
-
-// Extract drug name from image (mock implementation)
-export async function extractDrugFromImage(_imageFile: File): Promise<string | null> {
-  // Simulate processing delay
-  await new Promise((resolve) => setTimeout(resolve, 1500));
-
-  // Mock: randomly return one of the available drugs
-  const drugs = getAvailableDrugs();
-  const randomIndex = Math.floor(Math.random() * drugs.length);
-  return drugs[randomIndex];
+  return Object.keys(drugDatabase).map(
+    key => drugDatabase[key].name
+  );
 }
